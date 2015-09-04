@@ -7,8 +7,8 @@
       <Diagram DiagramId="8413b9cbb8eb4b249b6bf391fce8f3ae" Name="Diagram1">
         <EntityTypeShape EntityType="Model.Order" Width="1.5" PointX="3" PointY="1" IsExpanded="true" />
         <EntityTypeShape EntityType="Model.OrderStatu" Width="1.5" PointX="0.75" PointY="1.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="Model.OrderType" Width="1.5" PointX="0.75" PointY="4.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="Model.SoftwareProduct" Width="1.5" PointX="6.75" PointY="2.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.OrderType" Width="1.5" PointX="3" PointY="5" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.SoftwareProduct" Width="1.5" PointX="7.5" PointY="1.125" IsExpanded="true" />
         <AssociationConnector Association="Model.FK_Order_OrderStatus" ManuallyRouted="false" />
         <AssociationConnector Association="Model.FK_Order_OrderType" ManuallyRouted="false" />
         <AssociationConnector Association="Model.FK_Order_ToTable" ManuallyRouted="false" />
