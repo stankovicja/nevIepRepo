@@ -52,3 +52,4 @@ C:\Users\Marko\Documents\GitHub\nevIepRepo\nevIepProject\nevIepProject\bin\Micro
 C:\Users\Marko\Documents\GitHub\nevIepRepo\nevIepProject\nevIepProject\bin\Microsoft.Owin.Security.MicrosoftAccount.xml
 C:\Users\Marko\Documents\GitHub\nevIepRepo\nevIepProject\nevIepProject\obj\Debug\nevIepProject.dll
 C:\Users\Marko\Documents\GitHub\nevIepRepo\nevIepProject\nevIepProject\obj\Debug\nevIepProject.pdb
+C:\Users\Marko\Documents\GitHub\nevIepRepo\nevIepProject\nevIepProject\obj\Debug\nevIepProject.csprojResolveAssemblyReference.cache
