@@ -24,5 +24,6 @@ namespace nevIepProject.Models
         public virtual OrderStatu OrderStatu { get; set; }
         public virtual OrderType OrderType { get; set; }
         public virtual SoftwareProduct SoftwareProduct { get; set; }
+        public virtual AspNetUser AspNetUser { get; set; }
     }
 }

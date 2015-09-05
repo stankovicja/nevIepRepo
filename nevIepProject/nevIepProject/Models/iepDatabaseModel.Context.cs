@@ -29,5 +29,6 @@ namespace nevIepProject.Models
         public virtual DbSet<OrderStatu> OrderStatus { get; set; }
         public virtual DbSet<OrderType> OrderTypes { get; set; }
         public virtual DbSet<SoftwareProduct> SoftwareProducts { get; set; }
+        public virtual DbSet<AspNetUser> AspNetUsers { get; set; }
     }
 }

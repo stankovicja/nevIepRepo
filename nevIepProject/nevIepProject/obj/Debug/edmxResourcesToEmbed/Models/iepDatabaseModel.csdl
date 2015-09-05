@@ -13,6 +13,7 @@
     <NavigationProperty Name="OrderStatu" Relationship="Self.FK_Order_OrderStatus" FromRole="Order" ToRole="OrderStatus" />
     <NavigationProperty Name="OrderType" Relationship="Self.FK_Order_OrderType" FromRole="Order" ToRole="OrderType" />
     <NavigationProperty Name="SoftwareProduct" Relationship="Self.FK_Order_ToTable" FromRole="Order" ToRole="SoftwareProduct" />
+    <NavigationProperty Name="AspNetUser" Relationship="Model.FK_Order_UserAccount" FromRole="Order" ToRole="AspNetUser" />
   </EntityType>
   <EntityType Name="OrderStatu">
     <Key>
@@ -44,6 +45,7 @@
     <Property Name="IsDeleted" Type="Int32" />
     <Property Name="CreatedBy" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
     <NavigationProperty Name="Orders" Relationship="Self.FK_Order_ToTable" FromRole="SoftwareProduct" ToRole="Order" />
+    <NavigationProperty Name="AspNetUser" Relationship="Model.FK_SoftwareProduct_UserAccount" FromRole="SoftwareProduct" ToRole="AspNetUser" />
   </EntityType>
   <Association Name="FK_Order_OrderStatus">
     <End Role="OrderStatus" Type="Self.OrderStatu" Multiplicity="0..1" />
@@ -98,5 +100,59 @@
       <End Role="SoftwareProduct" EntitySet="SoftwareProducts" />
       <End Role="Order" EntitySet="Orders" />
     </AssociationSet>
+    <EntitySet Name="AspNetUsers" EntityType="Model.AspNetUser" />
+    <AssociationSet Name="FK_Order_UserAccount" Association="Model.FK_Order_UserAccount">
+      <End Role="AspNetUser" EntitySet="AspNetUsers" />
+      <End Role="Order" EntitySet="Orders" />
+    </AssociationSet>
+    <AssociationSet Name="FK_SoftwareProduct_UserAccount" Association="Model.FK_SoftwareProduct_UserAccount">
+      <End Role="AspNetUser" EntitySet="AspNetUsers" />
+      <End Role="SoftwareProduct" EntitySet="SoftwareProducts" />
+    </AssociationSet>
   </EntityContainer>
+  <EntityType Name="AspNetUser">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+    <Property Name="Email" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+    <Property Name="EmailConfirmed" Type="Boolean" Nullable="false" />
+    <Property Name="PasswordHash" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="SecurityStamp" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="PhoneNumber" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="PhoneNumberConfirmed" Type="Boolean" Nullable="false" />
+    <Property Name="TwoFactorEnabled" Type="Boolean" Nullable="false" />
+    <Property Name="LockoutEndDateUtc" Type="DateTime" Precision="3" />
+    <Property Name="LockoutEnabled" Type="Boolean" Nullable="false" />
+    <Property Name="AccessFailedCount" Type="Int32" Nullable="false" />
+    <Property Name="UserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+    <Property Name="FirstName" Type="String" MaxLength="128" FixedLength="true" Unicode="true" />
+    <Property Name="LastName" Type="String" MaxLength="128" FixedLength="true" Unicode="true" />
+    <NavigationProperty Name="Orders" Relationship="Model.FK_Order_UserAccount" FromRole="AspNetUser" ToRole="Order" />
+    <NavigationProperty Name="SoftwareProducts" Relationship="Model.FK_SoftwareProduct_UserAccount" FromRole="AspNetUser" ToRole="SoftwareProduct" />
+  </EntityType>
+  <Association Name="FK_Order_UserAccount">
+    <End Type="Model.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
+    <End Type="Model.Order" Role="Order" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="AspNetUser">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Order">
+        <PropertyRef Name="CreatedBy" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_SoftwareProduct_UserAccount">
+    <End Type="Model.AspNetUser" Role="AspNetUser" Multiplicity="0..1" />
+    <End Type="Model.SoftwareProduct" Role="SoftwareProduct" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="AspNetUser">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="SoftwareProduct">
+        <PropertyRef Name="CreatedBy" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
 </Schema>

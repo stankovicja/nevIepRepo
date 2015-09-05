@@ -32,5 +32,6 @@ namespace nevIepProject.Models
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Order> Orders { get; set; }
+        public virtual AspNetUser AspNetUser { get; set; }
     }
 }

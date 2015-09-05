@@ -12,6 +12,11 @@ using PagedList;
 using Microsoft.AspNet.Identity;
 using System.Threading.Tasks;
 
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage.Auth;
+using System.IO;
+
 namespace nevIepProject.Controllers
 {
     public class SoftwareProductsController : Controller
@@ -19,6 +24,8 @@ namespace nevIepProject.Controllers
         private string _adminId = System.Configuration.ConfigurationManager.AppSettings["AdminId"];
         private static readonly int RESULTS_ON_PAGE = 10;
         private Entities db = new Entities();
+        private string _storageConnectionString = System.Configuration.ConfigurationManager.AppSettings["StorageConnectionString"];
+		
 
         // GET: SoftwareProducts
         public async Task<ActionResult> Index(string productName, string priceFrom, string priceTo, int? page)
@@ -62,17 +69,24 @@ namespace nevIepProject.Controllers
         }
 
         // GET: SoftwareProducts/Details/5
-        public ActionResult Details(long? id)
+        public async Task<ActionResult> Details(long? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            SoftwareProduct softwareProduct = db.SoftwareProducts.Find(id);
+            SoftwareProduct softwareProduct = await db.SoftwareProducts.FindAsync(id);
             if (softwareProduct == null)
             {
                 return HttpNotFound();
             }
+
+            string logoUrl = "https://nevenaiep.blob.core.windows.net/" + "iep-container" + "/" + softwareProduct.Logo;
+            softwareProduct.Logo = logoUrl;
+
+            string pictureUrl = "https://nevenaiep.blob.core.windows.net/" + "iep-container" + "/" + softwareProduct.Picture;
+            softwareProduct.Picture = pictureUrl;
+
             return View(softwareProduct);
         }
 
@@ -86,13 +100,47 @@ namespace nevIepProject.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Name,Version,Description,Logo,Picture,Price,IsDeleted,CreatedBy")] SoftwareProduct softwareProduct)
+        public async Task<ActionResult> Create([Bind(Include = "Id,Name,Version,Description,Logo,Picture,Price,IsDeleted,CreatedBy")] SoftwareProduct softwareProduct,  HttpPostedFileBase logo, HttpPostedFileBase picture)
         {
+
+            if (User.Identity.GetUserId() != _adminId)
+                return RedirectToAction("Index");
+
             if (ModelState.IsValid)
             {
+
+                softwareProduct.AspNetUser = await db.AspNetUsers.FirstAsync(u => u.Id == _adminId);
+                softwareProduct.IsDeleted = 0;
+
+                CloudStorageAccount storage = CloudStorageAccount.Parse(_storageConnectionString);
+                CloudBlobClient blobClient = storage.CreateCloudBlobClient();
+                CloudBlobContainer container = blobClient.GetContainerReference("iep-container");
+
+                string pictureName = Guid.NewGuid().ToString() + "-" + picture.FileName;
+                string logoName = Guid.NewGuid().ToString() + "-" + logo.FileName;
+
+                CloudBlockBlob pictureBlob = container.GetBlockBlobReference(pictureName);
+                CloudBlockBlob logoBlob = container.GetBlockBlobReference(logoName);
+
+                MemoryStream pictureStream = new MemoryStream();
+                picture.InputStream.CopyTo(pictureStream);
+                pictureStream.Position = 0;
+                await pictureBlob.UploadFromStreamAsync(pictureStream);
+
+                MemoryStream logoStream = new MemoryStream();
+                logo.InputStream.CopyTo(logoStream);
+                logoStream.Position = 0;
+                await logoBlob.UploadFromStreamAsync(logoStream);
+
+                softwareProduct.Picture = pictureName;
+                softwareProduct.Logo = logoName;
+
+
+
                 db.SoftwareProducts.Add(softwareProduct);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
 
