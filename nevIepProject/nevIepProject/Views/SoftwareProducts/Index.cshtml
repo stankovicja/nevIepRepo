@@ -1,4 +1,7 @@
-﻿@model IEnumerable<nevIepProject.Models.SoftwareProduct>
+﻿@model IPagedList<nevIepProject.Models.SoftwareProduct>
+@using Microsoft.AspNet.Identity
+@using PagedList
+@using PagedList.Mvc
 
 @{
     ViewBag.Title = "Index";
@@ -8,34 +11,71 @@
 <h2>Index</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @if (Request.IsAuthenticated && User.Identity.GetUserId() == System.Configuration.ConfigurationManager.AppSettings["AdminId"])
+    { @Html.ActionLink("Create New", "Create");
+    }
 </p>
+
+@using (Html.BeginForm())
+{
+    <p>
+        <table>
+            <tr>
+                <td class="text-right">Find by product name: </td>
+                <td>@Html.TextBox("productName")</td>
+            </tr>
+            <tr>
+                <td class="text-right" id="price-from">Price from: </td>
+                <td>@Html.TextBox("priceFrom")</td>
+            </tr>
+            <tr>
+                <td class="text-right" id="price-to">Price to: </td>
+                <td>@Html.TextBox("priceTo")</td>
+            </tr>
+            <tr>
+                <td class="text-right"><input type="submit" value="Search" /></td>
+                <td><input type="button" value="Reset" onclick="resetValues()" /></td>
+            </tr>
+
+        </table>
+        <script>
+            function resetValues() {
+                document.getElementById('productName').value = '';
+                document.getElementById('priceFrom').value = '';
+                document.getElementById('priceTo').value = '';
+            }
+        </script>
+    </p>
+}
+
+<br/> <br />
+
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Name)
+            @Html.DisplayNameFor(model => model.First().Name)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Version)
+            @Html.DisplayNameFor(model => model.First().Version)
+        </th>
+        @*<th>
+            @Html.DisplayNameFor(model => model.First().Description)
+        </th>*@
+        <th>
+            @Html.DisplayNameFor(model => model.First().Logo)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Description)
+            @Html.DisplayNameFor(model => model.First().Picture)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Logo)
+            @Html.DisplayNameFor(model => model.First().Price)
         </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Picture)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Price)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.IsDeleted)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.CreatedBy)
-        </th>
+        @*<th>
+            @Html.DisplayNameFor(model => model.First().IsDeleted)
+        </th>*@
+        @*<th>
+            @Html.DisplayNameFor(model => model.First().CreatedBy)
+        </th>*@
         <th></th>
     </tr>
 
@@ -47,9 +87,9 @@
         <td>
             @Html.DisplayFor(modelItem => item.Version)
         </td>
-        <td>
+        @*<td>
             @Html.DisplayFor(modelItem => item.Description)
-        </td>
+        </td>*@
         <td>
             @Html.DisplayFor(modelItem => item.Logo)
         </td>
@@ -59,18 +99,24 @@
         <td>
             @Html.DisplayFor(modelItem => item.Price)
         </td>
-        <td>
+        @*<td>
             @Html.DisplayFor(modelItem => item.IsDeleted)
-        </td>
-        <td>
+        </td>*@
+        @*<td>
             @Html.DisplayFor(modelItem => item.CreatedBy)
-        </td>
+        </td>*@
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.Id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.Id })
+            @if (Request.IsAuthenticated && User.Identity.GetUserId() == System.Configuration.ConfigurationManager.AppSettings["AdminId"])
+            { @Html.ActionLink("Edit", "Edit", new { id = item.Id }); } |
+            @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+            @if (Request.IsAuthenticated && User.Identity.GetUserId() == System.Configuration.ConfigurationManager.AppSettings["AdminId"])
+            { @Html.ActionLink("Delete", "Delete", new { id = item.Id });}
         </td>
     </tr>
 }
 
 </table>
+
+<br />
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+    Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount

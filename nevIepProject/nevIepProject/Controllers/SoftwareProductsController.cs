@@ -8,16 +8,57 @@ using System.Web;
 using System.Web.Mvc;
 using nevIepProject.Models;
 
+using PagedList;
+using Microsoft.AspNet.Identity;
+using System.Threading.Tasks;
+
 namespace nevIepProject.Controllers
 {
     public class SoftwareProductsController : Controller
     {
+        private string _adminId = System.Configuration.ConfigurationManager.AppSettings["AdminId"];
+        private static readonly int RESULTS_ON_PAGE = 10;
         private Entities db = new Entities();
 
         // GET: SoftwareProducts
-        public ActionResult Index()
+        public async Task<ActionResult> Index(string productName, string priceFrom, string priceTo, int? page)
         {
-            return View(db.SoftwareProducts.ToList());
+            IList<SoftwareProduct> list = await db.SoftwareProducts.ToListAsync();
+
+            if (!String.IsNullOrEmpty(productName))
+            {
+                list = list.Where(x => x.Name.Contains(productName)).ToList();
+                page = 1;
+            }
+
+            if (!String.IsNullOrEmpty(priceFrom))
+            {
+                try
+                {
+                    decimal filter = Decimal.Parse(priceFrom);
+                    list = list.Where(x => x.Price >= filter).ToList();
+                    page = 1;
+                }
+                catch (Exception ex) { }
+            }
+
+
+            if (!String.IsNullOrEmpty(priceTo))
+            {
+                try
+                {
+                    decimal filter = Decimal.Parse(priceTo);
+                    list = list.Where(x => x.Price <= filter).ToList();
+                    page = 1;
+                }
+                catch (Exception ex) { }
+            }
+
+            if (User.Identity.GetUserId() != _adminId)
+                list = list.Where(u => u.IsDeleted == 0).ToList();
+
+
+            return View(list.ToPagedList(page ?? 1, RESULTS_ON_PAGE));
         }
 
         // GET: SoftwareProducts/Details/5
