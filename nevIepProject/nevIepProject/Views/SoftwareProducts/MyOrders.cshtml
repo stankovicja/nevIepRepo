@@ -1,0 +1,63 @@
+﻿@model IPagedList<nevIepProject.Models.Order>
+@using Microsoft.AspNet.Identity
+@using PagedList
+@using PagedList.Mvc
+
+@{
+    ViewBag.Title = "MyOrders";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>MyOrders</h2>
+
+@*@Html.ActionLink("Get xml", "ExportOrdersToXml", new { userId = User.Identity.GetUserId() })*@
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.First().TotalPrice)
+        </th>
+        @*<th>
+            @Html.DisplayNameFor(model => model.First().CreatedAt)
+        </th>*@
+        <th>
+            @Html.DisplayNameFor(model => model.First().AspNetUser.Email)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.First().OrderStatu.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.First().OrderType.Name)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalPrice)
+            </td>
+            @*<td>
+                @Html.DisplayFor(modelItem => item.CreatedAt)
+            </td>*@
+            <td>
+                @Html.DisplayFor(modelItem => item.AspNetUser.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OrderStatu.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OrderType.Name)
+            </td>
+            <td>
+                @Html.ActionLink("Details", "OrderDetails", new { id = item.Id })
+            </td>
+        </tr>
+    }
+
+</table>
+
+<br />
+@Html.PagedListPager(Model, page => Url.Action("MyOrders", new { userId = User.Identity.GetUserId(), page }))
+    Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount

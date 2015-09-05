@@ -64,6 +64,12 @@ namespace nevIepProject.Controllers
             if (User.Identity.GetUserId() != _adminId)
                 list = list.Where(u => u.IsDeleted == 0).ToList();
 
+            foreach (SoftwareProduct product in list)
+            {
+                string logoUrl = "https://nevenaiep.blob.core.windows.net/" + "iep-container" + "/" + product.Logo;
+                product.Logo = logoUrl;
+
+            }
 
             return View(list.ToPagedList(page ?? 1, RESULTS_ON_PAGE));
         }
@@ -91,8 +97,11 @@ namespace nevIepProject.Controllers
         }
 
         // GET: SoftwareProducts/Create
+        [Authorize]
         public ActionResult Create()
         {
+            if (User.Identity.GetUserId() != _adminId)
+                return RedirectToAction("Index");
             return View();
         }
 
@@ -148,13 +157,17 @@ namespace nevIepProject.Controllers
         }
 
         // GET: SoftwareProducts/Edit/5
-        public ActionResult Edit(long? id)
+        [Authorize]
+        public async Task<ActionResult> Edit(long? id)
         {
+            if (User.Identity.GetUserId() != _adminId)
+                return RedirectToAction("Index");
+
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            SoftwareProduct softwareProduct = db.SoftwareProducts.Find(id);
+            SoftwareProduct softwareProduct = await db.SoftwareProducts.FindAsync(id);
             if (softwareProduct == null)
             {
                 return HttpNotFound();
@@ -165,27 +178,35 @@ namespace nevIepProject.Controllers
         // POST: SoftwareProducts/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Name,Version,Description,Logo,Picture,Price,IsDeleted,CreatedBy")] SoftwareProduct softwareProduct)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,Name,Version,Description,Logo,Picture,Price,IsDeleted,CreatedBy")] SoftwareProduct softwareProduct)
         {
+            if (User.Identity.GetUserId() != _adminId)
+                return RedirectToAction("Index");
+
             if (ModelState.IsValid)
             {
                 db.Entry(softwareProduct).State = EntityState.Modified;
-                db.SaveChanges();
+                await db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
             return View(softwareProduct);
         }
 
         // GET: SoftwareProducts/Delete/5
-        public ActionResult Delete(long? id)
+        [Authorize]
+        public async Task<ActionResult> Delete(long? id)
         {
+            if (User.Identity.GetUserId() != _adminId)
+                return RedirectToAction("Index");
+
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            SoftwareProduct softwareProduct = db.SoftwareProducts.Find(id);
+            SoftwareProduct softwareProduct = await db.SoftwareProducts.FindAsync(id);
             if (softwareProduct == null)
             {
                 return HttpNotFound();
@@ -196,12 +217,26 @@ namespace nevIepProject.Controllers
         // POST: SoftwareProducts/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(long id)
+        public async Task<ActionResult> DeleteConfirmed(long id)
         {
-            SoftwareProduct softwareProduct = db.SoftwareProducts.Find(id);
-            db.SoftwareProducts.Remove(softwareProduct);
-            db.SaveChanges();
+            SoftwareProduct softwareProduct = await db.SoftwareProducts.FindAsync(id);
+            softwareProduct.IsDeleted = 1;
+            await db.SaveChangesAsync();
             return RedirectToAction("Index");
+        }
+
+        [Authorize]
+        public async Task<ActionResult> MyOrders(string userId, int? page)
+        {
+            IList<Order> list = await db.Orders.Where(x => x.AspNetUser.Id == userId).ToListAsync();
+            return View(list.ToPagedList(page ?? 1, RESULTS_ON_PAGE));
+        }
+
+        [Authorize]
+        public async Task<ActionResult> OrderDetails(long id)
+        {
+            Order order = await db.Orders.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return View(order);
         }
 
         protected override void Dispose(bool disposing)

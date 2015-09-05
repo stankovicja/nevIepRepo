@@ -40,7 +40,7 @@
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Logo)
+            <image src="@Model.Logo" height="100" />
         </dd>
 
         <dt>
@@ -48,7 +48,7 @@
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Picture)
+            <image src="@Model.Picture" height="100" />
         </dd>
 
         <dt>
@@ -59,25 +59,28 @@
             @Html.DisplayFor(model => model.Price)
         </dd>
 
-        <dt>
+        @*<dt>
             @Html.DisplayNameFor(model => model.IsDeleted)
         </dt>
 
         <dd>
             @Html.DisplayFor(model => model.IsDeleted)
-        </dd>
+        </dd>*@
 
-        <dt>
+        @*<dt>
             @Html.DisplayNameFor(model => model.CreatedBy)
         </dt>
 
         <dd>
             @Html.DisplayFor(model => model.CreatedBy)
-        </dd>
+        </dd>*@
 
     </dl>
 </div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "Index")
+    @if (Request.IsAuthenticated)
+    { @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) } |
+    @Html.ActionLink("Back to List", "Index") |
+    @*@if (Request.IsAuthenticated)
+    { @Html.ActionLink("Order", "Centili", new { productId = Model.Id }) }*@
 </p>
