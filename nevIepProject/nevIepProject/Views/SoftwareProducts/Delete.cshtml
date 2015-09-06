@@ -7,8 +7,11 @@
 
 <h2>Delete</h2>
 
+
+
 <h3>Are you sure you want to delete this?</h3>
 <div>
+  
     <h4>SoftwareProduct</h4>
     <hr />
     <dl class="dl-horizontal">
@@ -41,16 +44,16 @@
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Logo)
+            <image src="@Model.Logo" height="100" />
         </dd>
 
-        <dt>
+        @*<dt>
             @Html.DisplayNameFor(model => model.Picture)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Picture)
-        </dd>
+            <image src="@Model.Picture" height="100" />
+        </dd>*@
 
         <dt>
             @Html.DisplayNameFor(model => model.Price)
@@ -60,21 +63,7 @@
             @Html.DisplayFor(model => model.Price)
         </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.IsDeleted)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.IsDeleted)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.CreatedBy)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.CreatedBy)
-        </dd>
+        
 
     </dl>
 

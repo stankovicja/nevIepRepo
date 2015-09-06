@@ -22,9 +22,6 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    @*<li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("About", "About", "Home")</li>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>*@
                     <li>@Html.ActionLink("Products", "Index", "SoftwareProducts")</li>
                     @if (Request.IsAuthenticated)
                     {<li>@Html.ActionLink("My orders", "MyOrders", "SoftwareProducts", new { userId = User.Identity.GetUserId() }, new { })</li> }
@@ -38,7 +35,7 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+            <p>&copy; - Nevena Stankovic - Softversko inzenjerstvo - @DateTime.Now.Year </p>
         </footer>
     </div>
 

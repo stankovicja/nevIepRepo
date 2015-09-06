@@ -82,8 +82,8 @@
     { @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) } |
     @Html.ActionLink("Back to List", "Index") |
     @if (Request.IsAuthenticated)
-    { @Html.ActionLink("Order", "Buy", new { productId = Model.Id , type = 1}) }
+    { @Html.ActionLink("Order", "Buy", new { productId = Model.Id}) }
     @if (Request.IsAuthenticated)
-    { @Html.ActionLink("Renew licence", "Buy", new { productId = Model.Id, type = 2}) }
+    { @Html.ActionLink("Renew licence", "Renew", new { productId = Model.Id}) }
                                                                          
 </p>

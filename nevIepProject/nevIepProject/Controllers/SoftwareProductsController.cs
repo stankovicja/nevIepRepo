@@ -249,6 +249,13 @@ namespace nevIepProject.Controllers
             {
                 return HttpNotFound();
             }
+
+            string logoUrl = "https://nevenaiep.blob.core.windows.net/" + "iep-container" + "/" + softwareProduct.Logo;
+            softwareProduct.Logo = logoUrl;
+
+            //string pictureUrl = "https://nevenaiep.blob.core.windows.net/" + "iep-container" + "/" + softwareProduct.Picture;
+            //softwareProduct.Picture = pictureUrl;
+
             return View(softwareProduct);
         }
 
