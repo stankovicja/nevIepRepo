@@ -70,9 +70,12 @@
         <th>
             @Html.DisplayNameFor(model => model.First().Price)
         </th>
-        @*<th>
+@if (Request.IsAuthenticated && User.Identity.GetUserId() == System.Configuration.ConfigurationManager.AppSettings["AdminId"])
+{
+        <th>
             @Html.DisplayNameFor(model => model.First().IsDeleted)
-        </th>*@
+        </th>
+}
         @*<th>
             @Html.DisplayNameFor(model => model.First().CreatedBy)
         </th>*@
@@ -99,9 +102,13 @@
         <td>
             @Html.DisplayFor(modelItem => item.Price)
         </td>
-        @*<td>
-            @Html.DisplayFor(modelItem => item.IsDeleted)
-        </td>*@
+@if (Request.IsAuthenticated && User.Identity.GetUserId() == System.Configuration.ConfigurationManager.AppSettings["AdminId"])
+{
+    <td>
+        @Html.DisplayFor(modelItem => item.IsDeleted)
+    </td>
+}
+
         @*<td>
             @Html.DisplayFor(modelItem => item.CreatedBy)
         </td>*@

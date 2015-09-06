@@ -39,6 +39,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Azure.KeyVault.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Azure.KeyVault.Core.1.0.0\lib\net40\Microsoft.Azure.KeyVault.Core.dll</HintPath>
       <Private>True</Private>
@@ -204,6 +208,7 @@
     <Compile Include="Models\AspNetUser.cs">
       <DependentUpon>iepDatabaseModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\CentiliViewModel.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\iepDatabaseModel.Context.cs">
       <AutoGen>True</AutoGen>
@@ -317,6 +322,9 @@
     <Content Include="Views\SoftwareProducts\Index.cshtml" />
     <Content Include="Views\SoftwareProducts\Order.cshtml" />
     <Content Include="Views\SoftwareProducts\MyOrders.cshtml" />
+    <Content Include="Views\SoftwareProducts\DetailsOrder.cshtml" />
+    <Content Include="Views\SoftwareProducts\Buy.cshtml" />
+    <Content Include="Views\SoftwareProducts\OrderUnsuccessful.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

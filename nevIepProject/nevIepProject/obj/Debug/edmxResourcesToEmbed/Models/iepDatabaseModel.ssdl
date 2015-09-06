@@ -29,6 +29,7 @@
     <Property Name="TypeId" Type="bigint" />
     <Property Name="CreatedBy" Type="nvarchar" MaxLength="128" />
     <Property Name="SoftwareProductId" Type="bigint" />
+    <Property Name="createdDate" Type="date" />
   </EntityType>
   <EntityType Name="OrderStatus">
     <Key>

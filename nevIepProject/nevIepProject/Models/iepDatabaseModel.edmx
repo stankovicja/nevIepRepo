@@ -34,6 +34,7 @@
           <Property Name="TypeId" Type="bigint" />
           <Property Name="CreatedBy" Type="nvarchar" MaxLength="128" />
           <Property Name="SoftwareProductId" Type="bigint" />
+          <Property Name="createdDate" Type="date" />
         </EntityType>
         <EntityType Name="OrderStatus">
           <Key>
@@ -168,6 +169,7 @@
           <NavigationProperty Name="OrderType" Relationship="Self.FK_Order_OrderType" FromRole="Order" ToRole="OrderType" />
           <NavigationProperty Name="SoftwareProduct" Relationship="Self.FK_Order_ToTable" FromRole="Order" ToRole="SoftwareProduct" />
           <NavigationProperty Name="AspNetUser" Relationship="Model.FK_Order_UserAccount" FromRole="Order" ToRole="AspNetUser" />
+          <Property Name="createdDate" Type="DateTime" Precision="0" />
         </EntityType>
         <EntityType Name="OrderStatu">
           <Key>
@@ -318,6 +320,7 @@
           <EntitySetMapping Name="Orders">
             <EntityTypeMapping TypeName="Model.Order">
               <MappingFragment StoreEntitySet="Order">
+                <ScalarProperty Name="createdDate" ColumnName="createdDate" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="TotalPrice" ColumnName="TotalPrice" />
                 <ScalarProperty Name="StatusId" ColumnName="StatusId" />

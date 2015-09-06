@@ -1,0 +1,39 @@
+﻿@model nevIepProject.Models.CentiliViewModel
+
+
+@{
+    ViewBag.Title = "Buy";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Buy</h2>
+
+@using (Html.BeginForm("BuyConfirm", "SoftwareProducts"))
+{
+    @Html.AntiForgeryToken();
+
+    @Html.HiddenFor(m => m.Code);
+    @Html.HiddenFor(m => m.OrderId);
+
+    <div class="form-horizontal">
+
+        <div class="form-group">
+            <div class="col-md-10">
+                <i>Confirmation code:</i> <b>@Html.DisplayFor(m => m.Code)</b>
+                @Html.EditorFor(m => m.EnteredCode, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Confirm" class="btn btn-default" />
+            </div>
+        </div>
+
+    </div>
+}
+
+
+<a id="c-mobile-payment-widget" href="https://www.centili.com/widget/WidgetModule?api=379ab13aff164cd971a0601c903b2580"><img src="https://www.centili.com/images/payment-widget-button.png" /></a>
+
+<script type="text/javascript" src="https://www.centili.com/widget/js/c-mobile-payment-scripts.js"></script>

@@ -20,6 +20,7 @@ namespace nevIepProject.Models
         public Nullable<long> TypeId { get; set; }
         public string CreatedBy { get; set; }
         public Nullable<long> SoftwareProductId { get; set; }
+        public Nullable<System.DateTime> createdDate { get; set; }
     
         public virtual OrderStatu OrderStatu { get; set; }
         public virtual OrderType OrderType { get; set; }

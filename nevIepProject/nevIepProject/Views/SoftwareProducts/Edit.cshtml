@@ -8,10 +8,16 @@
 <h2>Edit</h2>
 
 
-@using (Html.BeginForm())
+@using (Html.BeginForm("Edit", "SoftwareProducts", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
     
+   var logoUrl = "https://nevenaiep.blob.core.windows.net/" + "iep-container" + "/" + Model.Logo;
+   var pictureUrl = "https://nevenaiep.blob.core.windows.net/" + "iep-container" + "/" + Model.Picture;
+    
+    @Html.HiddenFor(m => m.Logo);
+    @Html.HiddenFor(m => m.Picture);
+        
     <div class="form-horizontal">
         <h4>SoftwareProduct</h4>
         <hr />
@@ -45,7 +51,8 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Logo, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Logo, new { htmlAttributes = new { @class = "form-control" } })
+                <image src="@logoUrl" height="100" />
+                <input type="file" name="Logo">        
                 @Html.ValidationMessageFor(model => model.Logo, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -53,7 +60,8 @@
         <div class="form-group">
             @Html.LabelFor(model => model.Picture, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Picture, new { htmlAttributes = new { @class = "form-control" } })
+                <image src="@pictureUrl" height="100" />
+                <input type="file" name="Picture"> 
                 @Html.ValidationMessageFor(model => model.Picture, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -71,14 +79,6 @@
             <div class="col-md-10">
                 @Html.EditorFor(model => model.IsDeleted, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.IsDeleted, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.CreatedBy, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.CreatedBy, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.CreatedBy, "", new { @class = "text-danger" })
             </div>
         </div>
 

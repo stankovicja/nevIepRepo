@@ -14,6 +14,7 @@
     <NavigationProperty Name="OrderType" Relationship="Self.FK_Order_OrderType" FromRole="Order" ToRole="OrderType" />
     <NavigationProperty Name="SoftwareProduct" Relationship="Self.FK_Order_ToTable" FromRole="Order" ToRole="SoftwareProduct" />
     <NavigationProperty Name="AspNetUser" Relationship="Model.FK_Order_UserAccount" FromRole="Order" ToRole="AspNetUser" />
+    <Property Name="createdDate" Type="DateTime" Precision="0" />
   </EntityType>
   <EntityType Name="OrderStatu">
     <Key>

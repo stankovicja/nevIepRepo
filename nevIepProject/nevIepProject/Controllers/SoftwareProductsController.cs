@@ -16,6 +16,8 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage.Auth;
 using System.IO;
+using System.Net.Mail;
+using log4net;
 
 namespace nevIepProject.Controllers
 {
@@ -25,11 +27,14 @@ namespace nevIepProject.Controllers
         private static readonly int RESULTS_ON_PAGE = 10;
         private Entities db = new Entities();
         private string _storageConnectionString = System.Configuration.ConfigurationManager.AppSettings["StorageConnectionString"];
-		
+
+        private static readonly ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
 
         // GET: SoftwareProducts
         public async Task<ActionResult> Index(string productName, string priceFrom, string priceTo, int? page)
         {
+      
             IList<SoftwareProduct> list = await db.SoftwareProducts.ToListAsync();
 
             if (!String.IsNullOrEmpty(productName))
@@ -46,7 +51,7 @@ namespace nevIepProject.Controllers
                     list = list.Where(x => x.Price >= filter).ToList();
                     page = 1;
                 }
-                catch (Exception ex) { }
+                catch (Exception ex) { log.Error("Error Parsing Price"); }
             }
 
 
@@ -58,7 +63,7 @@ namespace nevIepProject.Controllers
                     list = list.Where(x => x.Price <= filter).ToList();
                     page = 1;
                 }
-                catch (Exception ex) { }
+                catch (Exception ex) { log.Error("Error Parsing Price"); }
             }
 
             if (User.Identity.GetUserId() != _adminId)
@@ -181,13 +186,43 @@ namespace nevIepProject.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "Id,Name,Version,Description,Logo,Picture,Price,IsDeleted,CreatedBy")] SoftwareProduct softwareProduct)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,Name,Version,Description,Logo,Picture,Price,IsDeleted,CreatedBy")] SoftwareProduct softwareProduct, HttpPostedFileBase logo, HttpPostedFileBase picture)
+
         {
             if (User.Identity.GetUserId() != _adminId)
                 return RedirectToAction("Index");
 
             if (ModelState.IsValid)
             {
+                CloudStorageAccount storage = CloudStorageAccount.Parse(_storageConnectionString);
+                CloudBlobClient blobClient = storage.CreateCloudBlobClient();
+                CloudBlobContainer container = blobClient.GetContainerReference("iep-container");
+
+                if (logo!= null)
+                {
+                    string logoName = Guid.NewGuid().ToString() + "-" + logo.FileName;
+                    CloudBlockBlob logoBlob = container.GetBlockBlobReference(logoName);
+                    MemoryStream logoStream = new MemoryStream();
+                    logo.InputStream.CopyTo(logoStream);
+                    logoStream.Position = 0;
+                    await logoBlob.UploadFromStreamAsync(logoStream);
+                    softwareProduct.Logo = logoName;
+
+
+                }
+                if (picture != null)
+                {
+                    string pictureName = Guid.NewGuid().ToString() + "-" + picture.FileName;
+                    CloudBlockBlob pictureBlob = container.GetBlockBlobReference(pictureName);
+
+                    MemoryStream pictureStream = new MemoryStream();
+                    picture.InputStream.CopyTo(pictureStream);
+                    pictureStream.Position = 0;
+                    await pictureBlob.UploadFromStreamAsync(pictureStream);
+                    softwareProduct.Picture = pictureName;
+
+                }
+                 
                 db.Entry(softwareProduct).State = EntityState.Modified;
                 await db.SaveChangesAsync();
                 return RedirectToAction("Index");
@@ -233,10 +268,84 @@ namespace nevIepProject.Controllers
         }
 
         [Authorize]
-        public async Task<ActionResult> OrderDetails(long id)
+        public async Task<ActionResult> DetailsOrder(long id)
         {
             Order order = await db.Orders.Where(x => x.Id == id).FirstOrDefaultAsync();
             return View(order);
+        }
+
+        [Authorize]
+        public async Task<ActionResult> Buy(long productId)
+        {
+            string userId = User.Identity.GetUserId();
+
+            SoftwareProduct product = await db.SoftwareProducts.Where(x => x.Id == productId).FirstOrDefaultAsync();
+
+            if (product == null) return RedirectToAction("Index");
+
+            Order order = new Order()
+            {
+                AspNetUser = db.AspNetUsers.Where(x => x.Id == userId).FirstOrDefault(),
+                OrderStatu = db.OrderStatus.Where(x => x.Name == "Waiting").FirstOrDefault(),
+                OrderType = db.OrderTypes.Where(x => x.Name == "Buy").FirstOrDefault(),
+                SoftwareProduct = product,
+                TotalPrice = product.Price,
+                createdDate = DateTime.Now
+            };
+
+
+            db.Orders.Add(order);
+
+            await db.SaveChangesAsync();
+
+            CentiliViewModel data = new CentiliViewModel()
+            {
+                Code = Guid.NewGuid().ToString().Remove(5),
+                OrderId = order.Id
+            };
+            
+            return View(data);
+        }
+
+        [Authorize]
+        public async Task<ActionResult> BuyConfirm(CentiliViewModel data)
+        {
+            Order order = await db.Orders.Where(x => x.Id == data.OrderId).FirstOrDefaultAsync();
+
+            if (data.Code == data.EnteredCode && order != null)
+            {
+                order.OrderStatu = await db.OrderStatus.Where(x => x.Name == "Successful").FirstOrDefaultAsync();
+                await db.SaveChangesAsync();
+                string userId = User.Identity.GetUserId();
+                AspNetUser user = await db.AspNetUsers.Where(x => x.Id == userId).FirstOrDefaultAsync();
+                if (user != null)
+                    SendConfirmationEmail(user.Email, order.Id);
+                return RedirectToAction("DetailsOrder", new { id = order.Id });
+            }
+            else
+            {
+                if (order != null)
+                {
+                    order.OrderStatu = await db.OrderStatus.Where(x => x.Name == "Declined").FirstOrDefaultAsync();
+                    await db.SaveChangesAsync();
+                }
+                return View("OrderUnsuccessful");
+            }
+        }
+
+        private void SendConfirmationEmail(string email, long id)
+        {
+            MailMessage mail = new MailMessage();
+
+            mail.From = new MailAddress("iepsendmail@gmail.com");
+            mail.To.Add(new MailAddress(email));
+            mail.Subject = String.Format("Order confirmation - {0}", id);
+            mail.Body = "Order successful. Have a nice day!";
+
+            SmtpClient smtp = new SmtpClient("smtp.gmail.com");
+            smtp.Credentials = new NetworkCredential("iepsendmail@gmail.com", "MaksPoena");
+            smtp.EnableSsl = true;
+            smtp.Send(mail);
         }
 
         protected override void Dispose(bool disposing)

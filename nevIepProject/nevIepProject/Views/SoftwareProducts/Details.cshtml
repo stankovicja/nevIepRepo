@@ -81,6 +81,6 @@
     @if (Request.IsAuthenticated)
     { @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) } |
     @Html.ActionLink("Back to List", "Index") |
-    @*@if (Request.IsAuthenticated)
-    { @Html.ActionLink("Order", "Centili", new { productId = Model.Id }) }*@
+    @if (Request.IsAuthenticated)
+    { @Html.ActionLink("Order", "Buy", new { productId = Model.Id }) }
 </p>

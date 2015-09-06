@@ -17,17 +17,17 @@
         <th>
             @Html.DisplayNameFor(model => model.First().TotalPrice)
         </th>
-        @*<th>
-            @Html.DisplayNameFor(model => model.First().CreatedAt)
-        </th>*@
+        <th>
+            @Html.DisplayNameFor(model => model.First().createdDate)
+        </th>
         <th>
             @Html.DisplayNameFor(model => model.First().AspNetUser.Email)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.First().OrderStatu.Name)
+            Order Status
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.First().OrderType.Name)
+            Order Type
         </th>
         <th></th>
     </tr>
@@ -38,9 +38,9 @@
             <td>
                 @Html.DisplayFor(modelItem => item.TotalPrice)
             </td>
-            @*<td>
-                @Html.DisplayFor(modelItem => item.CreatedAt)
-            </td>*@
+            <td>
+                @Html.DisplayFor(modelItem => item.createdDate)
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.AspNetUser.Email)
             </td>
@@ -51,7 +51,7 @@
                 @Html.DisplayFor(modelItem => item.OrderType.Name)
             </td>
             <td>
-                @Html.ActionLink("Details", "OrderDetails", new { id = item.Id })
+                @Html.ActionLink("Details", "DetailsOrder", new { id = item.Id })
             </td>
         </tr>
     }
