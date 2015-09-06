@@ -227,6 +227,8 @@ namespace nevIepProject.Controllers
                 }
                  
                 db.Entry(softwareProduct).State = EntityState.Modified;
+                softwareProduct.IsDeleted = 0;
+                softwareProduct.CreatedBy = _adminId;
                 await db.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
