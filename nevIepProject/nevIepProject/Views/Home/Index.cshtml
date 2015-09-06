@@ -1,6 +1,9 @@
 ﻿@{
     ViewBag.Title = "Home Page";
     string pictureUrl = "https://nevenaiep.blob.core.windows.net/" + "iep-container" + "/" + "46353d8a-afbf-435d-ae31-46dce3e8b418-savant-products.png";
+    string pictureUrl1 = "https://nevenaiep.blob.core.windows.net/" + "iep-container" + "/" + "5c5e5e6b-2116-4c7d-90e8-76544748a999-win10.jpg";
+    string pictureUrl2 = "https://nevenaiep.blob.core.windows.net/" + "iep-container" + "/" + "62efd556-3e60-4d39-8dac-86039856fec8-win8.png";
+    string pictureUrl3 = "https://nevenaiep.blob.core.windows.net/" + "iep-container" + "/" + "9e778157-56a2-47f8-b95c-fa15350bb758-office.png";
 
 }
 
@@ -11,23 +14,31 @@
 </div>
 
 <div class="row">
-    @*<div class="col-md-4">
-        <h2>Getting started</h2>
+    <h1> Trending </h1>
+    <div class="col-md-4">
+        <h2>Windows 10</h2>
         <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
+            Windows 10 is familiar and easy to use, with lots of similarities to Windows 7 
+            including the Start menu. It starts up and resumes fast, has more built-in security
+             to help keep you safe, and is designed to work with software and hardware you already
+             have.
         </p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
+        <img src="@pictureUrl1" width="350" height="250">
     </div>
     <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-    </div>
+        <h2>Windows 8</h2>
+        <p>Windows 8 hasn't done fantastically well in terms of public reception - even
+             leading some at Microsoft to say that the company's "Start Screen first"
+             mentality was wide of the mark. Sales of the software also struggled at first,
+             but after 90 days, 
+        </p><img src="@pictureUrl2" width="350" height="250"> </div>
     <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-    </div>*@
+        <h2>Office 2015</h2>
+        <p>New features in the Windows release include the ability to create, open, edit,
+         and save files in the cloud straight from the desktop, a new search tool for 
+        commands available in Word, PowerPoint, and Excel named "Tell Me", and co-authoring
+         in real time.
+            </p> 
+        <img src="@pictureUrl3" width="350" height="250"> 
+    </div>
 </div>
