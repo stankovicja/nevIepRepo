@@ -54,6 +54,5 @@
     </dl>
 </div>
 <p>
-    @*@Html.ActionLink("Get pdf", "ExportOrderToPdf", new { orderId = Model.Id }) |*@
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Export to PDF", "ExportOrderToPdf", new { orderId = Model.Id }) 
 </p>

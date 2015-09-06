@@ -20,6 +20,7 @@ using System.Net.Mail;
 using log4net;
 using iTextSharp.text.pdf;
 using System.Xml.Linq;
+using iTextSharp.text;
 
 namespace nevIepProject.Controllers
 {
@@ -381,6 +382,60 @@ namespace nevIepProject.Controllers
 
             string MIMEType = "application/xml";
             return File(stream, MIMEType, String.Format("Orders - {0}.xml", orders.First().AspNetUser.Email));
+        }
+
+        [Authorize]
+        public async Task<ActionResult> ExportOrderToPdf(long orderId)
+        {
+
+            CloudStorageAccount storage = CloudStorageAccount.Parse(_storageConnectionString);
+            CloudBlobClient blobClient = storage.CreateCloudBlobClient();
+            CloudBlobContainer container = blobClient.GetContainerReference("iep-container");
+
+            Order order = await db.Orders.Where(x => x.Id == orderId).FirstOrDefaultAsync();
+            if (order == null)
+            {
+                // _logger.Error(String.Format("Order with id:{0} have not been found", orderId));
+                return RedirectToAction("Index");
+            }
+
+            SoftwareProduct product = order.SoftwareProduct;
+            if (product == null)
+            {
+                //_logger.Error(String.Format("Order {0} doesn't contain any product", orderId));
+                return RedirectToAction("OrderDetails", order.Id);
+            }
+
+            MemoryStream stream = new MemoryStream();
+            Document document = new Document();
+            PdfWriter writer = PdfWriter.GetInstance(document, stream);
+
+            document.Open();
+
+            string print = "-----------------------------------------------------------------------\n";
+            print += "Order: " + order.Id + "\n";
+            print += "Price: " + order.TotalPrice + "\n";
+            print += "Created at: " + order.createdDate.ToString() + "\n";
+            print += "Type: " + order.OrderType.Name + "\n";
+            print += "Status: " + order.OrderStatu.Name + "\n";
+            print += "-----------------------------------------------------------------------\n";
+            print += "Product name: " + product.Name + "\n";
+            print += "Product description: " + product.Description + "\n";
+            document.Add(new Paragraph(print));
+
+            byte[] imageBytesLogo = new WebClient().DownloadData("https://nevenaiep.blob.core.windows.net/" + "iep-container" + "/" + product.Logo);
+            iTextSharp.text.Image imageLogo = iTextSharp.text.Image.GetInstance(imageBytesLogo);
+            imageLogo.ScaleAbsolute(140, 140);
+            imageLogo.SetAbsolutePosition(400, 665);
+            document.Add(imageLogo);
+
+            byte[] imageBytesPicture = new WebClient().DownloadData("https://nevenaiep.blob.core.windows.net/" + "iep-container" + "/" + product.Picture);
+            iTextSharp.text.Image imagePicture = iTextSharp.text.Image.GetInstance(imageBytesPicture);
+            imagePicture.ScaleAbsolute(330, 330);
+            document.Add(imagePicture);
+            document.Close();
+            string MIMEType = "application/pdf";
+            return File(stream.GetBuffer(), MIMEType, String.Format("Order - {0}.pdf", order.Id));
         }
 
         protected override void Dispose(bool disposing)
