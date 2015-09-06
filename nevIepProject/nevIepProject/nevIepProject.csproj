@@ -39,6 +39,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="itextsharp, Version=5.5.6.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\iTextSharp.5.5.6\lib\itextsharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
       <Private>True</Private>
@@ -325,6 +329,9 @@
     <Content Include="Views\SoftwareProducts\DetailsOrder.cshtml" />
     <Content Include="Views\SoftwareProducts\Buy.cshtml" />
     <Content Include="Views\SoftwareProducts\OrderUnsuccessful.cshtml" />
+    <Content Include="Views\Manage\ChangeEmail.cshtml" />
+    <Content Include="Views\Manage\ChangeFirstName.cshtml" />
+    <Content Include="Views\Manage\ChangeLastName.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

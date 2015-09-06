@@ -107,3 +107,5 @@ C:\Users\Marko\Documents\GitHub\nevIepRepo\nevIepProject\nevIepProject\bin\zh-Ha
 C:\Users\Marko\Documents\GitHub\nevIepRepo\nevIepProject\nevIepProject\bin\zh-Hant\System.Spatial.resources.dll
 C:\Users\Marko\Documents\GitHub\nevIepRepo\nevIepProject\nevIepProject\bin\log4net.dll
 C:\Users\Marko\Documents\GitHub\nevIepRepo\nevIepProject\nevIepProject\bin\log4net.xml
+C:\Users\Marko\Documents\GitHub\nevIepRepo\nevIepProject\nevIepProject\bin\itextsharp.dll
+C:\Users\Marko\Documents\GitHub\nevIepRepo\nevIepProject\nevIepProject\bin\itextsharp.xml

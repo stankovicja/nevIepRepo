@@ -10,7 +10,12 @@
 
 <h2>MyOrders</h2>
 
-@*@Html.ActionLink("Get xml", "ExportOrdersToXml", new { userId = User.Identity.GetUserId() })*@
+@using (Html.BeginForm("ExportOrdersToXml", "SoftwareProducts", FormMethod.Get, new { enctype = "multipart/form-data" }))
+{
+    @Html.TextBox("from", DateTime.Now.AddMonths(-1).ToShortDateString(), new { type = "date" })
+    @Html.TextBox("to", DateTime.Now.ToShortDateString(), new { type = "date" })
+    <input type="submit" value="Get XML" />
+}
 
 <table class="table">
     <tr>

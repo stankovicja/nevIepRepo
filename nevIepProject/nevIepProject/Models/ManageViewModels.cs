@@ -82,5 +82,24 @@ namespace nevIepProject.Models
     {
         public string SelectedProvider { get; set; }
         public ICollection<System.Web.Mvc.SelectListItem> Providers { get; set; }
+    
+    }
+
+    public class ChangeFirstNameViewModel
+    {
+        [Display(Name = "First name")]
+        public string FirstName { get; set; }
+    }
+
+    public class ChangeLastNameViewModel
+    {
+        [Display(Name = "Last name")]
+        public string LastName { get; set; }
+    }
+
+    public class ChangeEmailViewModel
+    {
+        [Display(Name = "Email")]
+        public string Email { get; set; }
     }
 }

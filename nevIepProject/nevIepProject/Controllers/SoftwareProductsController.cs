@@ -18,6 +18,8 @@ using Microsoft.WindowsAzure.Storage.Auth;
 using System.IO;
 using System.Net.Mail;
 using log4net;
+using iTextSharp.text.pdf;
+using System.Xml.Linq;
 
 namespace nevIepProject.Controllers
 {
@@ -346,6 +348,39 @@ namespace nevIepProject.Controllers
             smtp.Credentials = new NetworkCredential("iepsendmail@gmail.com", "MaksPoena");
             smtp.EnableSsl = true;
             smtp.Send(mail);
+        }
+
+        [Authorize]
+        public async Task<FileResult> ExportOrdersToXml(DateTime from, DateTime to)
+        {
+            string userId = User.Identity.GetUserId();
+            to = to.AddDays(1);
+            IList<Order> orders = await db.Orders.Where(x => x.AspNetUser.Id == userId && x.createdDate >= from && x.createdDate <= to).ToListAsync();
+
+            XDocument document = new XDocument(new XElement("Orders"));
+            foreach (Order order in orders)
+            {
+                SoftwareProduct product = order.SoftwareProduct;
+
+                XElement node = new XElement("Order");
+
+                node.Add(new XElement("OrderId", order.Id));
+                node.Add(new XElement("ProductPrice", order.TotalPrice));
+                node.Add(new XElement("OrderDate", order.createdDate.ToString()));
+                node.Add(new XElement("Type", order.OrderType.Name));
+                node.Add(new XElement("Status", order.OrderStatu.Name));
+                node.Add(new XElement("ProductName", product.Name));
+                node.Add(new XElement("ProductDescription", product.Description));
+
+                document.Root.Add(node);
+            }
+
+            MemoryStream stream = new MemoryStream();
+            document.Save(stream);
+            stream.Position = 0;
+
+            string MIMEType = "application/xml";
+            return File(stream, MIMEType, String.Format("Orders - {0}.xml", orders.First().AspNetUser.Email));
         }
 
         protected override void Dispose(bool disposing)

@@ -61,7 +61,10 @@ namespace nevIepProject.Controllers
                 : message == ManageMessageId.Error ? "An error has occurred."
                 : message == ManageMessageId.AddPhoneSuccess ? "Your phone number was added."
                 : message == ManageMessageId.RemovePhoneSuccess ? "Your phone number was removed."
-                : "";
+                : message == ManageMessageId.ChangeEmailSuccess ? "Your email was changed."
+               : message == ManageMessageId.ChangeFirstNameSuccess ? "Your first name was changed."
+               : message == ManageMessageId.ChangeLastNameSuccess ? "Your last name was changed."
+               : "";
 
             var userId = User.Identity.GetUserId();
             var model = new IndexViewModel
@@ -331,6 +334,98 @@ namespace nevIepProject.Controllers
             base.Dispose(disposing);
         }
 
+        public ActionResult ChangeFirstName()
+        {
+            ApplicationUser user = UserManager.FindById(User.Identity.GetUserId());
+            return View(new ChangeFirstNameViewModel() { FirstName = user.FirstName });
+        }
+
+        //
+        // POST: /Manage/ChangeFirstName
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ChangeFirstName(ChangeFirstNameViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            ApplicationUser user = UserManager.FindById(User.Identity.GetUserId());
+            user.FirstName = model.FirstName;
+
+            var result = await UserManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                return RedirectToAction("Index", new { Message = ManageMessageId.ChangeFirstNameSuccess });
+            }
+            AddErrors(result);
+            return View(model);
+        }
+
+        public ActionResult ChangeLastName()
+        {
+            ApplicationUser user = UserManager.FindById(User.Identity.GetUserId());
+            return View(new ChangeLastNameViewModel() { LastName = user.LastName });
+        }
+
+        //
+        // POST: /Manage/ChangeLastName
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ChangeLastName(ChangeLastNameViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            ApplicationUser user = UserManager.FindById(User.Identity.GetUserId());
+            user.LastName = model.LastName;
+
+            var result = await UserManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                return RedirectToAction("Index", new { Message = ManageMessageId.ChangeLastNameSuccess });
+            }
+            AddErrors(result);
+            return View(model);
+        }
+
+        public ActionResult ChangeEmail()
+        {
+            ApplicationUser user = UserManager.FindById(User.Identity.GetUserId());
+            return View(new ChangeEmailViewModel() { Email = user.Email });
+        }
+
+        //
+        // POST: /Manage/ChangeEmail
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ChangeEmail(ChangeEmailViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            ApplicationUser user = UserManager.FindById(User.Identity.GetUserId());
+            user.Email = model.Email;
+
+            var result = await UserManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                var loginUser = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+                if (loginUser != null)
+                {
+                    await SignInManager.SignInAsync(loginUser, isPersistent: false, rememberBrowser: false);
+                }
+                return RedirectToAction("Index", new { Message = ManageMessageId.ChangeEmailSuccess });
+            }
+            AddErrors(result);
+            return View(model);
+        }
+
 #region Helpers
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";
@@ -379,6 +474,9 @@ namespace nevIepProject.Controllers
             SetPasswordSuccess,
             RemoveLoginSuccess,
             RemovePhoneSuccess,
+            ChangeEmailSuccess,
+            ChangeFirstNameSuccess,
+            ChangeLastNameSuccess,
             Error
         }
 

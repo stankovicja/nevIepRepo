@@ -70,7 +70,7 @@ namespace nevIepProject.Models
 
         [Required]
         [Display(Name = "Last Name")]
-        public string LastNAme { get; set; }
+        public string LastName { get; set; }
 
         [Required]
         [EmailAddress]
