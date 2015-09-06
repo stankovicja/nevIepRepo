@@ -311,7 +311,66 @@ namespace nevIepProject.Controllers
         }
 
         [Authorize]
+        public async Task<ActionResult> Renew(long productId)
+        {
+            string userId = User.Identity.GetUserId();
+
+            SoftwareProduct product = await db.SoftwareProducts.Where(x => x.Id == productId).FirstOrDefaultAsync();
+
+            if (product == null) return RedirectToAction("Index");
+
+            Order order = new Order()
+            {
+                AspNetUser = db.AspNetUsers.Where(x => x.Id == userId).FirstOrDefault(),
+                OrderStatu = db.OrderStatus.Where(x => x.Name == "Waiting").FirstOrDefault(),
+                OrderType = db.OrderTypes.Where(x => x.Name == "Renew").FirstOrDefault(),
+                SoftwareProduct = product,
+                TotalPrice = product.Price,
+                createdDate = DateTime.Now
+            };
+
+
+            db.Orders.Add(order);
+
+            await db.SaveChangesAsync();
+
+            CentiliViewModel data = new CentiliViewModel()
+            {
+                Code = Guid.NewGuid().ToString().Remove(5),
+                OrderId = order.Id
+            };
+
+            return View(data);
+        }
+
+        [Authorize]
         public async Task<ActionResult> BuyConfirm(CentiliViewModel data)
+        {
+            Order order = await db.Orders.Where(x => x.Id == data.OrderId).FirstOrDefaultAsync();
+
+            if (data.Code == data.EnteredCode && order != null)
+            {
+                order.OrderStatu = await db.OrderStatus.Where(x => x.Name == "Successful").FirstOrDefaultAsync();
+                await db.SaveChangesAsync();
+                string userId = User.Identity.GetUserId();
+                AspNetUser user = await db.AspNetUsers.Where(x => x.Id == userId).FirstOrDefaultAsync();
+                if (user != null)
+                    SendConfirmationEmail(user.Email, order.Id);
+                return RedirectToAction("DetailsOrder", new { id = order.Id });
+            }
+            else
+            {
+                if (order != null)
+                {
+                    order.OrderStatu = await db.OrderStatus.Where(x => x.Name == "Declined").FirstOrDefaultAsync();
+                    await db.SaveChangesAsync();
+                }
+                return View("OrderUnsuccessful");
+            }
+        }
+
+        [Authorize]
+        public async Task<ActionResult> RenewConfirm(CentiliViewModel data)
         {
             Order order = await db.Orders.Where(x => x.Id == data.OrderId).FirstOrDefaultAsync();
 
@@ -412,26 +471,28 @@ namespace nevIepProject.Controllers
 
             document.Open();
 
-            string print = "-----------------------------------------------------------------------\n";
-            print += "Order: " + order.Id + "\n";
-            print += "Price: " + order.TotalPrice + "\n";
-            print += "Created at: " + order.createdDate.ToString() + "\n";
-            print += "Type: " + order.OrderType.Name + "\n";
-            print += "Status: " + order.OrderStatu.Name + "\n";
-            print += "-----------------------------------------------------------------------\n";
-            print += "Product name: " + product.Name + "\n";
-            print += "Product description: " + product.Description + "\n";
+            string print = "*************************USER**************************\n\n\n";
+            print += "User: " + order.AspNetUser.FirstName + "  " + order.AspNetUser.LastName + "\n\n";
+            print += "*************************ORDER**************************\n\n\n";
+            print += "Order ID: " + order.Id + "\n\n";
+            print += "Created at: " + order.createdDate.ToString() + "\n\n";
+            print += "Price: " + order.TotalPrice + "\n\n";
+            print += "Type: " + order.OrderType.Name + "\n\n";
+            print += "Status: " + order.OrderStatu.Name + "\n\n";
+            print += "*************************PRODUCT**************************\n\n\n";
+            print += "Product name: " + product.Name + "\n\n";
+            print += "Product description: " + product.Description + "\n\n";
             document.Add(new Paragraph(print));
 
             byte[] imageBytesLogo = new WebClient().DownloadData("https://nevenaiep.blob.core.windows.net/" + "iep-container" + "/" + product.Logo);
             iTextSharp.text.Image imageLogo = iTextSharp.text.Image.GetInstance(imageBytesLogo);
-            imageLogo.ScaleAbsolute(140, 140);
+            imageLogo.ScalePercent(50);
             imageLogo.SetAbsolutePosition(400, 665);
             document.Add(imageLogo);
 
             byte[] imageBytesPicture = new WebClient().DownloadData("https://nevenaiep.blob.core.windows.net/" + "iep-container" + "/" + product.Picture);
             iTextSharp.text.Image imagePicture = iTextSharp.text.Image.GetInstance(imageBytesPicture);
-            imagePicture.ScaleAbsolute(330, 330);
+            imagePicture.ScalePercent(50);
             document.Add(imagePicture);
             document.Close();
             string MIMEType = "application/pdf";

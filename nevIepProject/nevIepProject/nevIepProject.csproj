@@ -332,6 +332,7 @@
     <Content Include="Views\Manage\ChangeEmail.cshtml" />
     <Content Include="Views\Manage\ChangeFirstName.cshtml" />
     <Content Include="Views\Manage\ChangeLastName.cshtml" />
+    <Content Include="Views\SoftwareProducts\Renew.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
